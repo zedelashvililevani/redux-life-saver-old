@@ -7,6 +7,9 @@
   "module": "build/index.es.js",
   "jsnext:main": "build/index.es.js",
   "types": "build/index.d.ts",
+  "files": [
+    "./build"
+  ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -38,7 +41,8 @@
     }
   },
   "scripts": {
-    "build": "npx rollup -c"
+    "build": "npx rollup -c",
+    "start": "rollup -c -w"
   },
   "eslintConfig": {
     "extends": [
@@ -46,16 +50,13 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zedelashvililevani/redux-life-saver.git"
+  },
+  "author": "zedelashvililevani",
+  "bugs": {
+    "url": "https://github.com/zedelashvililevani/redux-life-saver/issues"
+  },
+  "homepage": "https://github.com/zedelashvililevani/redux-life-saver#readme"
 }
