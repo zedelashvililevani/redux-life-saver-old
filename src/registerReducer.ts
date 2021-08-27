@@ -1,6 +1,6 @@
-import produce from "immer";
-import { Action, InitialState } from "./types";
-import { ActionsEnum } from "./enums";
+import produce from 'immer';
+import { Action, InitialState, IState } from './types';
+import { ActionsEnum } from './enums';
 // This must be enum, but whatever
 
 interface RegisterReducerParams<T> {
@@ -10,7 +10,7 @@ interface RegisterReducerParams<T> {
   onError?: (payload: T | null) => string | null;
 }
 
-const initialState: InitialState<null> = {
+const initialState: IState<null> = {
   isLoading: false,
   isRefetching: false,
   isFetchMore: false,
@@ -19,10 +19,7 @@ const initialState: InitialState<null> = {
 };
 
 interface ReducerResult<T> {
-  [x: string]: (
-    state: InitialState<T | null>,
-    action: Action<T>
-  ) => InitialState<T | null>;
+  [x: string]: (state: InitialState<T | null>, action: Action<T>) => InitialState<T | null>;
 }
 
 export function registerReducer<TData = any>({
@@ -31,51 +28,42 @@ export function registerReducer<TData = any>({
   onFetchMore,
   onError,
 }: RegisterReducerParams<TData>): ReducerResult<TData> {
-  const reducer = (
-    state: InitialState<TData | null> = initialState,
-    action: Action<TData>
-  ) => {
+  const reducer = (state: InitialState<TData | null>, action: Action<TData>) => {
+    // console.log(action.type, action, action.error, reducerName);
     // this will provide O(n) instead of O(n * cases)
+    if (!state) return { [reducerName]: initialState };
     if (action.reducer !== reducerName) return state;
     return produce(state, (draft: InitialState<TData | null>) => {
-      switch (action.type) {
-        case reducerName + ActionsEnum.error: {
-          if (onError) draft.error = onError(action.payload);
-          else draft.error = action.error;
-          break;
-        }
-        case reducerName + ActionsEnum.request: {
-          draft.isLoading = true;
-          break;
-        }
-        case reducerName + ActionsEnum.refetch: {
-          draft.isRefetching = true;
-          break;
-        }
-        case reducerName + ActionsEnum.fetch: {
-          draft.isLoading = false;
-          draft.isRefetching = false;
-          if (onFetch) draft.data = onFetch(action.payload);
-          else draft.data = action.payload;
-          break;
-        }
-        case reducerName + ActionsEnum.fetchMoreRequest: {
-          draft.isFetchMore = true;
-          break;
-        }
-        case reducerName + ActionsEnum.fetchMore: {
-          draft.isFetchMore = false;
-          if (onFetchMore) draft.data = onFetchMore(action.payload, state.data);
-          break;
-        }
-        case reducerName + ActionsEnum.writeCache: {
-          draft.data = action.payload;
-          break;
-        }
-        default: {
-          draft = state;
-        }
-      }
+      if (!draft[action.cacheName]) draft[action.cacheName] = initialState;
+      const actions = {
+        [reducerName + ActionsEnum.error]: () => {
+          if (onError) draft[action.cacheName].error = onError(action.payload);
+          else draft[action.cacheName].error = action.error;
+        },
+        [reducerName + ActionsEnum.request]: () => {
+          draft[action.cacheName].isLoading = true;
+        },
+        [reducerName + ActionsEnum.refetch]: () => {
+          draft[action.cacheName].isRefetching = true;
+        },
+        [reducerName + ActionsEnum.fetch]: () => {
+          draft[action.cacheName].isLoading = false;
+          draft[action.cacheName].isRefetching = false;
+          if (onFetch) draft[action.cacheName].data = onFetch(action.payload);
+          else draft[action.cacheName].data = action.payload;
+        },
+        [reducerName + ActionsEnum.fetchMoreRequest]: () => {
+          draft[action.cacheName].isFetchMore = true;
+        },
+        [reducerName + ActionsEnum.fetchMore]: () => {
+          draft[action.cacheName].isFetchMore = false;
+          if (onFetchMore) draft[action.cacheName].data = onFetchMore(action.payload, state[action.cacheName].data);
+        },
+        [reducerName + ActionsEnum.writeCache]: () => {
+          draft[action.cacheName].data = action.payload;
+        },
+      };
+      actions[action.type]();
     });
   };
   return {

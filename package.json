@@ -41,8 +41,10 @@
     }
   },
   "scripts": {
-    "build": "npx rollup -c",
-    "start": "rollup -c -w"
+    "build": "rm -rf build && rollup -c && tsc --emitDeclarationOnly",
+    "start": "rollup -c -w",
+    "prepublish:public": "npm run build && npm run bump-version",
+    "publish:public": "npm publish --access public"
   },
   "eslintConfig": {
     "extends": [

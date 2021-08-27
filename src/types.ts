@@ -1,5 +1,6 @@
 export interface Action<T> {
   type: string;
+  cacheName: string;
   payload: T | null;
   error: string | null;
   reducer: string;
@@ -13,7 +14,7 @@ export interface IState<T> {
   data: T;
 }
 
-export type InitialState<T> = IState<T | null>;
+export type InitialState<T> = { [x: string]: IState<T | null> };
 export type InitialCacheState<T> = IState<T>;
 
 export interface SelectorState<T> {
@@ -22,5 +23,5 @@ export interface SelectorState<T> {
 
 export type UseSelector = <TState = {}, TSelected = unknown>(
   selector: (state: TState) => TSelected,
-  equalityFn?: (left: TSelected, right: TSelected) => boolean
+  equalityFn?: (left: TSelected, right: TSelected) => boolean,
 ) => TSelected;

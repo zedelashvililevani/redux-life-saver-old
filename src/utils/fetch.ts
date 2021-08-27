@@ -11,3 +11,10 @@ export const fetcher = async <T>(url: string, options: object): Promise<T> => {
   const response = (await resp.clone().json()) as Promise<T>;
   return response;
 };
+
+type ObjKey = { [x: string]: any };
+
+export const objectToKey = (obj?: ObjKey): string | undefined => {
+  if (!obj) return undefined;
+  return Object.keys(obj).reduce((prev, curr) => prev + curr + obj[curr], '');
+};

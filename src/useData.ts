@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { NetworkStatusEnum, ActionsEnum } from "./enums";
-import { InitialState, Action, SelectorState, UseSelector } from "./types";
-import { fetcher, paramsToUri } from "./utils/fetch";
-import { initReadCache } from "./readCache";
-import { initWriteCache } from "./writeCache";
+import { NetworkStatusEnum, ActionsEnum } from './enums';
+import { Action, SelectorState, UseSelector, IState } from './types';
+import { fetcher, objectToKey, paramsToUri } from './utils/fetch';
+import { initReadCache } from './readCache';
+import { initWriteCache } from './writeCache';
 
 interface initParams {
   serverUrl: string;
@@ -16,6 +16,7 @@ interface useDataParams {
   url: string;
   params?: object;
   cacheOnly?: boolean;
+  cacheOptions?: object;
 }
 
 interface RefetchParams {
@@ -35,13 +36,15 @@ export const initUseData = ({
   const useWriteCache = initWriteCache(useDispatch);
   const useData = <TData>(
     reducerName: string,
-    { url, params = {}, cacheOnly = false }: useDataParams
+    { url, params = {}, cacheOnly = false, cacheOptions }: useDataParams,
   ) => {
+    const cacheName = objectToKey(cacheOptions) || reducerName;
     const dispatch = useDispatch();
-    const { isLoading, isRefetching, isFetchMore, error, data } = useSelector<
-      SelectorState<TData>,
-      InitialState<TData>
-    >((data) => data[reducerName] as InitialState<TData>);
+    const { isLoading, isRefetching, isFetchMore, error, data } = useSelector<SelectorState<TData>, IState<TData>>(
+      data => (data[reducerName][cacheName] || data[reducerName]) as IState<TData>,
+    );
+
+    //temp
     useEffect(() => {
       if (!cacheOnly) fetch();
     }, []);
@@ -49,10 +52,12 @@ export const initUseData = ({
     const takeAction = (
       actionName: string,
       newData: TData | null = data,
-      error: string | null = null
+      error: string | null = null,
+      cacheKey: string = cacheName,
     ): Action<TData> => {
       return {
         type: actionName,
+        cacheName: cacheKey,
         payload: newData,
         error: error,
         reducer: reducerName,
@@ -64,16 +69,11 @@ export const initUseData = ({
       return customFetch<TData>(serverUrl + uri, fetchOptions);
     };
 
-    const fetch = async ({
-      fetchParams = params,
-      fetchUrl = url,
-    }: RefetchParams = {}) => {
+    const fetch = async ({ fetchParams = params, fetchUrl = url }: RefetchParams = {}) => {
       dispatch(takeAction(reducerName + ActionsEnum.request));
       try {
         const responseData = await fetchData(fetchParams, fetchUrl);
-        return dispatch(
-          takeAction(reducerName + ActionsEnum.fetch, responseData)
-        );
+        return dispatch(takeAction(reducerName + ActionsEnum.fetch, responseData));
       } catch (e) {
         return dispatch(takeAction(e));
       }
@@ -83,9 +83,7 @@ export const initUseData = ({
       dispatch(takeAction(reducerName + ActionsEnum.refetch));
       try {
         const responseData = await fetchData(params, url);
-        return dispatch(
-          takeAction(reducerName + ActionsEnum.fetch, responseData)
-        );
+        return dispatch(takeAction(reducerName + ActionsEnum.fetch, responseData));
       } catch (e) {
         return dispatch(takeAction(e));
       }
@@ -95,9 +93,7 @@ export const initUseData = ({
       dispatch(takeAction(reducerName + ActionsEnum.fetchMoreRequest));
       try {
         const responseData = await fetchData(params);
-        return dispatch(
-          takeAction(reducerName + ActionsEnum.fetchMore, responseData)
-        );
+        return dispatch(takeAction(reducerName + ActionsEnum.fetchMore, responseData));
       } catch (e) {
         return dispatch(takeAction(e));
       }
