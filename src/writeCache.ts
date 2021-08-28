@@ -1,8 +1,9 @@
+import { useDispatch } from "react-redux";
 import { ActionsEnum } from './enums';
 import { Action } from './types';
 import { objectToKey } from './utils/fetch';
 
-export const initWriteCache = (useDispatch: any) => {
+export const initWriteCache = () => {
   const useWriteCache = () => {
     const dispatch = useDispatch();
     const writeCache = <T>(reducerName: string, cache: T, cacheOptions?: object) => {

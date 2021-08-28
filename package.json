@@ -1,14 +1,15 @@
 {
-  "name": "redux-life-saver",
+  "name": "@zedelashvililevani/redux-life-saver",
   "version": "0.1.0",
   "private": false,
   "description": "",
-  "main": "build/index.js",
-  "module": "build/index.es.js",
-  "jsnext:main": "build/index.es.js",
-  "types": "build/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index",
   "files": [
-    "./build"
+    "./dist"
   ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
@@ -20,7 +21,7 @@
     "@types/react-redux": "^7.1.16",
     "immer": "^7.0.15",
     "react": "^17.0.1",
-    "react-redux": "^7.2.2",
+    "redux": "^4.0.0",
     "rollup": "^1.27.13",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -30,7 +31,8 @@
     "tslib": "^2.1.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0"
+    "react": "^16.8.0 || ^17.0.0",
+    "react-redux": "^5.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -41,9 +43,9 @@
     }
   },
   "scripts": {
-    "build": "rm -rf build && rollup -c && tsc --emitDeclarationOnly",
+    "build": "rm -rf dist && rollup -c && tsc --emitDeclarationOnly",
     "start": "rollup -c -w",
-    "prepublish:public": "npm run build && npm run bump-version",
+    "prepublish:public": "npm run dist",
     "publish:public": "npm publish --access public"
   },
   "eslintConfig": {

@@ -1,7 +1,8 @@
-import { UseSelector, InitialCacheState, SelectorState } from './types';
+import { useSelector } from "react-redux";
+import { InitialCacheState, SelectorState } from './types';
 import { objectToKey } from './utils/fetch';
 
-export const initReadCache = (useSelector: UseSelector) => {
+export const initReadCache = () => {
   const readCache = <TData>(reducerName: string, cacheOptions?: object) => {
     const { data } = useSelector<SelectorState<TData>, InitialCacheState<TData>>(data => {
       const cacheName = objectToKey(cacheOptions) || reducerName;

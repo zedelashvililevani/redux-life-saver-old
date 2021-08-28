@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { NetworkStatusEnum, ActionsEnum } from './enums';
-import { Action, SelectorState, UseSelector, IState } from './types';
+import { Action, SelectorState, IState } from './types';
 import { fetcher, objectToKey, paramsToUri } from './utils/fetch';
 import { initReadCache } from './readCache';
 import { initWriteCache } from './writeCache';
@@ -9,8 +10,6 @@ interface initParams {
   serverUrl: string;
   fetchOptions?: object;
   customFetch?: <T>(url: string, options: object) => Promise<T>;
-  useSelector: UseSelector;
-  useDispatch: any;
 }
 interface useDataParams {
   url: string;
@@ -28,12 +27,10 @@ export const initUseData = ({
   serverUrl,
   fetchOptions = {},
   customFetch = fetcher,
-  useSelector,
-  useDispatch,
 }: initParams) => {
   // main thing to use xD
-  const useReadCache = initReadCache(useSelector);
-  const useWriteCache = initWriteCache(useDispatch);
+  const useReadCache = initReadCache();
+  const useWriteCache = initWriteCache();
   const useData = <TData>(
     reducerName: string,
     { url, params = {}, cacheOnly = false, cacheOptions }: useDataParams,
