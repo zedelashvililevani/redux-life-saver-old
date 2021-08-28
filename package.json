@@ -1,6 +1,6 @@
 {
   "name": "@zedelashvililevani/redux-life-saver",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": false,
   "description": "",
   "main": "dist/index.js",
@@ -9,9 +9,8 @@
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist/**/*",
-    "dist/index.js",
-    "dist/index.d.ts"
+    "./dist/index.js",
+    "./dist/index.d.ts"
   ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
