@@ -1,13 +1,13 @@
 {
   "name": "@zedelashvililevani/redux-life-saver",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "types": "dist/index.d.ts",
-  "typings": "dist/index",
+  "typings": "dist/index.d.ts",
   "files": [
     "./dist"
   ],
@@ -45,7 +45,7 @@
   "scripts": {
     "build": "rm -rf dist && rollup -c && tsc --emitDeclarationOnly",
     "start": "rollup -c -w",
-    "prepublish:public": "npm run dist",
+    "prepublish:public": "npm run build",
     "publish:public": "npm publish --access public"
   },
   "eslintConfig": {
